@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Privacy Score</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #fceabb, #99ccff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .score-box {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 500px;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .score-label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .score-value {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .action-buttons {
+      margin-top: 20px;
+    }
+
+    .action-buttons a button {
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .action-buttons a button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+ <div class="score-box">
+  <h2>Privacy Risk</h2>
+  <img src="{{ url_for('uploaded') }}" alt="Uploaded Image">
+  <div class="score-label">Privacy Score</div>
+  <div class="score-value">{{ score }}</div>
+  <div class="score-label">Risk Level</div>
+  <div class="score-value">{{ risk_level }}</div>
+  <div class="action-buttons">
+    <a href="{{ url_for('explanation') }}"><button>Explain</button></a>
+    <a href="{{ url_for('blur_image') }}"><button>Sanitize</button></a>
+  </div>
+</div>
+
+</body>
+</html>
