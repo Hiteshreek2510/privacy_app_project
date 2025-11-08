@@ -1,32 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Privacy Check</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    /* Optional fallback styles */
-    .popup-container {
-      padding: 16px;
-      font-family: Arial, sans-serif;
-      max-width: 300px;
-    }
-    #result {
-      margin-top: 12px;
-      font-weight: bold;
-      color: #333;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="popup-container">
     <h2>Privacy Check</h2>
     <p id="filename">An image was selected. Would you like to check its privacy score?</p>
-    <button id="checkPrivacy">Check Privacy</button>
-    <button id="cancel">Cancel</button>
+    <div class="button-group">
+      <button id="checkPrivacy">✅ Check Privacy</button>
+      <button id="cancel">❌ Cancel</button>
+    </div>
     <div id="result"></div>
   </div>
-
   <script src="popup.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@ from PIL import Image
 import piexif
 import os
 import numpy as np
+import tempfile
 
 # Load models once globally
 model1 = YOLO('adhar.pt')
@@ -54,19 +55,25 @@ class privacyapp:
         self.privacy = min(self.privacy, 100)
         return self.privacy, self.risk_factors
 
-    def blur_sensitive_regions(self, output_path='static/sanitized/blurred.jpg'):
+    def blur_sensitive_regions(self):
         image = cv2.imread(self.img_path)
         for (x, y, w, h) in self.blur_regions:
             roi = image[y:y+h, x:x+w]
             blurred_roi = cv2.GaussianBlur(roi, (101, 101), 0)
             image[y:y+h, x:x+w] = blurred_roi
 
-        temp_path = "temp_blur.jpg"
-        cv2.imwrite(temp_path, image)
+        # Save blurred image to a temporary file
+        temp_blur = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+        cv2.imwrite(temp_blur.name, image)
 
-        pil_img = Image.open(temp_path)
-        pil_img.save(output_path, "jpeg", exif=piexif.dump({}))
-        os.remove(temp_path)
+        # Strip EXIF and save final sanitized image
+        pil_img = Image.open(temp_blur.name)
+        sanitized_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+        pil_img.save(sanitized_file.name, "jpeg", exif=piexif.dump({}))
 
-        print(f"Sanitized image saved at: {output_path}")
-        return output_path
+        # Clean up intermediate file
+        temp_blur.close()
+        os.remove(temp_blur.name)
+
+        print(f"Sanitized image saved at: {sanitized_file.name}")
+        return sanitized_file.name

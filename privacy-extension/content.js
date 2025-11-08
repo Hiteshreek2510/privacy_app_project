@@ -1,4 +1,3 @@
-// Utility: Send image info to background
 function notifyImageSelected(file) {
   if (!file || !file.type.startsWith('image/')) return;
 
@@ -12,25 +11,32 @@ function notifyImageSelected(file) {
   }
 }
 
-// Scan existing file inputs on page load
 function attachListenersToFileInputs() {
-  const fileInputs = document.querySelectorAll('input[type="file"]');
-  fileInputs.forEach(input => {
-    input.addEventListener('change', event => {
-      const file = event.target.files[0];
-      notifyImageSelected(file);
-    });
+  const inputs = document.querySelectorAll('input[type="file"]');
+  inputs.forEach(input => {
+    if (!input._privacyAttached) {
+      input.addEventListener('change', event => {
+        notifyImageSelected(event.target.files[0]);
+      });
+      input._privacyAttached = true;
+    }
   });
 }
 
-// Global listener for dynamically added inputs
+function observeNewInputs() {
+  const observer = new MutationObserver(() => {
+    attachListenersToFileInputs();
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+}
+
 document.addEventListener('change', event => {
   const target = event.target;
   if (target.tagName === 'INPUT' && target.type === 'file') {
-    const file = target.files[0];
-    notifyImageSelected(file);
+    notifyImageSelected(target.files[0]);
   }
 });
 
-// Initialize
 attachListenersToFileInputs();
+observeNewInputs();
