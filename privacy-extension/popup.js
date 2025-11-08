@@ -1,16 +1,18 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
   const checkBtn = document.getElementById('checkPrivacy');
   const cancelBtn = document.getElementById('cancel');
 
   checkBtn.addEventListener('click', async () => {
-    // Request the active tab
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    // Inject script to extract image file from page
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: extractImageAndSend
-    });
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: extractImageAndSend
+      });
+    } catch (err) {
+      alert('Failed to inject script: ' + err.message);
+    }
   });
 
   cancelBtn.addEventListener('click', () => {
@@ -21,30 +23,34 @@ document.addEventListener('DOMContentLoaded', function () {
 // This function runs in the page context
 function extractImageAndSend() {
   const input = document.querySelector('input[type="file"]');
-  if (input && input.files.length > 0) {
-    const file = input.files[0];
-    const reader = new FileReader();
+  if (!input || input.files.length === 0) {
+    alert('No image found in file input.');
+    return;
+  }
 
-    reader.onload = function () {
-      const base64Image = reader.result;
+  const file = input.files[0];
+  if (!file.type.startsWith('image/')) {
+    alert('Selected file is not an image.');
+    return;
+  }
 
-      // Send to backend API
-      fetch('https://your-backend-url.com/score', {
+  const reader = new FileReader();
+  reader.onload = async function () {
+    const base64Image = reader.result;
+
+    try {
+      const response = await fetch('https://your-backend-url.com/score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image: base64Image })
-      })
-        .then(res => res.json())
-        .then(data => {
-          alert(`Privacy Score: ${data.score}\nRisk Level: ${data.risk_level}`);
-        })
-        .catch(err => {
-          alert('Error checking privacy: ' + err.message);
-        });
-    };
+      });
 
-    reader.readAsDataURL(file);
-  } else {
-    alert('No image found in file input.');
-  }
+      const data = await response.json();
+      alert(`Privacy Score: ${data.score}\nRisk Level: ${data.risk_level}`);
+    } catch (err) {
+      alert('Error checking privacy: ' + err.message);
+    }
+  };
+
+  reader.readAsDataURL(file);
 }

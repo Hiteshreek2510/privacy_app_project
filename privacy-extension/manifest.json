@@ -6,24 +6,21 @@
   "permissions": ["scripting", "activeTab", "storage"],
   "host_permissions": ["<all_urls>"],
   "action": {
-  "default_icon": {
-    "128": "icons16.jpg"
+    "default_icon": {
+      "128": "icons16.jpg"
+    }
+    // Removed "default_popup" since you're opening popup.html manually via background.js
   },
-  "default_popup": "popup.html"
-},
-"icons": {
-  "128": "icons16.jpg"
-},
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
-  {
-    "matches": ["<all_urls>"],
-    "js": ["content.js"],
-    "run_at": "document_idle"
-  }
-],
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
   "icons": {
     "128": "icons16.jpg"
   }

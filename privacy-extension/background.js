@@ -1,5 +1,9 @@
 // background.js
 
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("Privacy Image Checker extension installed.");
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'IMAGE_SELECTED') {
+    chrome.tabs.create({
+      url: chrome.runtime.getURL('popup.html')
+    });
+  }
 });
