@@ -69,16 +69,31 @@
 <body>
  <div class="score-box">
   <h2>Privacy Risk</h2>
-  <img src="{{ url_for('uploaded') }}" alt="Uploaded Image">
+  <img id="uploadedImage" alt="Uploaded Image">
   <div class="score-label">Privacy Score</div>
-  <div class="score-value">{{ score }}</div>
+  <div class="score-value" id="scoreValue"></div>
   <div class="score-label">Risk Level</div>
-  <div class="score-value">{{ risk_level }}</div>
+  <div class="score-value" id="riskLevel"></div>
   <div class="action-buttons">
-    <a href="{{ url_for('explanation') }}"><button>Explain</button></a>
-    <a href="{{ url_for('blur_image') }}"><button>Sanitize</button></a>
+    <a href="explain.html"><button>Explain</button></a>
+    <a href="blur.html"><button>Sanitize</button></a>
   </div>
 </div>
 
+<script>
+  // Load values from localStorage
+  const score = localStorage.getItem("privacy_score");
+  const riskLevel = localStorage.getItem("risk_level");
+  const image = localStorage.getItem("image");
+
+  // Populate page
+  document.getElementById("scoreValue").textContent = score ? score + "/100" : "N/A";
+  document.getElementById("riskLevel").textContent = riskLevel || "N/A";
+  if (image) {
+    document.getElementById("uploadedImage").src = image;
+  } else {
+    document.getElementById("uploadedImage").alt = "No image available";
+  }
+</script>
 </body>
 </html>

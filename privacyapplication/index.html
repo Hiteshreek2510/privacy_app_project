@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Privacy Scan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #fceabb, #99ccff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .upload-box {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 400px;
+    }
+
+    h1 {
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    p {
+      margin-bottom: 30px;
+      color: #555;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    label {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #3498db;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    label:hover {
+      background-color: #2980b9;
+    }
+
+    #result {
+      margin-top: 20px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="upload-box">
+    <h1>Privacy Scan: Upload Your Image</h1>
+    <p>We'll scan your image for privacy risks before you share it.</p>
+    <input type="file" id="imageInput" accept="image/*">
+    <label for="imageInput">ADD IMAGE</label>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const imageInput = document.getElementById("imageInput");
+    const resultDiv = document.getElementById("result");
+
+    imageInput.addEventListener("change", async (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Image = reader.result;
+        resultDiv.innerHTML = "<p>Checking privacy score...</p>";
+
+        try {
+          const response = await fetch("https://hiteshreepatel-scoring-app.hf.space/score", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: base64Image })
+          });
+
+          if (!response.ok) throw new Error("API error");
+
+          const result = await response.json();
+
+          // Save results to localStorage
+          localStorage.setItem("privacy_score", result.score);
+          localStorage.setItem("risk_level", result.risk_level);
+          localStorage.setItem("risks", JSON.stringify(result.risks));
+          localStorage.setItem("image", base64Image);
+
+          // Redirect to privacyscore.html
+          window.location.href = "privacyscore.html";
+        } catch (err) {
+          resultDiv.innerHTML = "<p style='color:red;'>Error checking privacy score.</p>";
+          console.error(err);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
