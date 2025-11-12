@@ -1,22 +1,25 @@
 function notifyImageSelected(file) {
   if (!file || !file.type.startsWith('image/')) return;
 
-  try {
+  const reader = new FileReader();
+  reader.onload = () => {
     chrome.runtime.sendMessage({
       type: 'IMAGE_SELECTED',
-      filename: file.name
+      filename: file.name,
+      data: reader.result
     });
-  } catch (err) {
-    console.warn('Failed to send message:', err.message);
-  }
+  };
+  reader.readAsDataURL(file);
 }
 
-function attachListenersToFileInputs() {
-  const inputs = document.querySelectorAll('input[type="file"]');
+
+function attachListenersToFileInputs(root = document) {
+  const inputs = root.querySelectorAll('input[type="file"]');
   inputs.forEach(input => {
     if (!input._privacyAttached) {
       input.addEventListener('change', event => {
-        notifyImageSelected(event.target.files[0]);
+        const file = event.target.files?.[0];
+        notifyImageSelected(file);
       });
       input._privacyAttached = true;
     }
@@ -24,19 +27,23 @@ function attachListenersToFileInputs() {
 }
 
 function observeNewInputs() {
-  const observer = new MutationObserver(() => {
-    attachListenersToFileInputs();
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(mutation => {
+      mutation.addedNodes.forEach(node => {
+        if (node.nodeType === 1) {
+          if (node.matches?.('input[type="file"]')) {
+            attachListenersToFileInputs(node);
+          } else {
+            attachListenersToFileInputs(node);
+          }
+        }
+      });
+    });
   });
 
   observer.observe(document.body, { childList: true, subtree: true });
 }
 
-document.addEventListener('change', event => {
-  const target = event.target;
-  if (target.tagName === 'INPUT' && target.type === 'file') {
-    notifyImageSelected(target.files[0]);
-  }
-});
-
+// Initial scan and listener setup
 attachListenersToFileInputs();
 observeNewInputs();

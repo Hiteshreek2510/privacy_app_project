@@ -8,13 +8,24 @@
 <body>
   <div class="popup-container">
     <h2>Privacy Check</h2>
+    <img id="preview" src="" style="max-width: 100%; margin-top: 1em;">
     <p id="filename">An image was selected. Would you like to check its privacy score?</p>
     <div class="button-group">
       <button id="checkPrivacy">✅ Check Privacy</button>
       <button id="cancel">❌ Cancel</button>
     </div>
+
     <div id="result"></div>
+
+    <!-- Sanitization Section -->
+    <div id="sanitizedSection" style="display: none; margin-top: 1em;">
+      <button id="sanitizeBtn">🧼 Sanitize Image</button>
+    </div>
+
+    <!-- Final Sanitized Output -->
+    <div id="sanitizedPreview" style="margin-top: 1em;"></div>
   </div>
+
   <script src="popup.js"></script>
 </body>
 </html>

@@ -4,19 +4,27 @@
   "version": "1.0",
   "description": "Detects image uploads and prompts users to check privacy before submitting.",
   "permissions": ["scripting", "activeTab", "storage"],
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": ["<all_urls>","https://mail.google.com/*"],
+  "web_accessible_resources": [
+  {
+    "resources": ["icons16.jpg"],
+    "matches": ["<all_urls>"]
+  }
+],
+
   "action": {
-    "default_icon": {
-      "128": "icons16.jpg"
-    }
-    // Removed "default_popup" since you're opening popup.html manually via background.js
+  "default_icon": {
+    "128": "icons16.jpg"
   },
+  "default_popup": "popup.html"
+}
+,
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": ["<all_urls>","https://mail.google.com/*"],
       "js": ["content.js"],
       "run_at": "document_idle"
     }
