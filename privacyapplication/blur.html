@@ -44,7 +44,8 @@
       margin-top: 20px;
     }
 
-    .button-container a button {
+    .button-container a button,
+    .button-container button {
       padding: 10px 20px;
       background-color: #3498db;
       color: white;
@@ -53,8 +54,13 @@
       cursor: pointer;
     }
 
-    .button-container a button:hover {
+    .button-container a button:hover,
+    .button-container button:hover {
       background-color: #2980b9;
+    }
+
+    #captchaBox {
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -94,14 +100,36 @@
         if (!response.ok) throw new Error("Sanitize API error");
 
         const result = await response.json();
+
+        // Generate CAPTCHA challenge
+        const num1 = Math.floor(Math.random() * 10) + 1;
+        const num2 = Math.floor(Math.random() * 10) + 1;
+
         outputDiv.innerHTML = `
           <img src="${result.sanitized_image}" alt="Sanitized Image" />
-          <div style="margin-top:0.5em;">
+          <div id="captchaBox">
+            <p>Solve this to unlock download: What is ${num1} + ${num2}?</p>
+            <input type="text" id="captchaAnswer" placeholder="Enter answer">
+            <button id="captchaSubmit">Verify</button>
+          </div>
+          <div id="downloadBox" style="display:none; margin-top:0.5em;">
             <a href="${result.sanitized_image}" download="sanitized.jpg">
               <button>⬇️ Download Image</button>
             </a>
           </div>
         `;
+
+        // Attach CAPTCHA logic
+        document.getElementById("captchaSubmit").addEventListener("click", () => {
+          const answer = document.getElementById("captchaAnswer").value;
+          if (parseInt(answer) === num1 + num2) {
+            document.getElementById("downloadBox").style.display = "block";
+            document.getElementById("captchaBox").style.display = "none";
+          } else {
+            alert("Incorrect answer, try again!");
+          }
+        });
+
       } catch (err) {
         outputDiv.innerHTML = "<p style='color:red;'>Error sanitizing image.</p>";
         console.error(err);

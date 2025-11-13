@@ -22,6 +22,7 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
       text-align: center;
       width: 400px;
+      position: relative;
     }
 
     h1 {
@@ -56,6 +57,21 @@
       margin-top: 20px;
       text-align: left;
     }
+
+    .disclaimer-link {
+      margin-top: 25px;
+      text-align: center;
+    }
+
+    .disclaimer-link a {
+      color: #2c3e50;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    .disclaimer-link a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -65,6 +81,11 @@
     <input type="file" id="imageInput" accept="image/*">
     <label for="imageInput">ADD IMAGE</label>
     <div id="result"></div>
+
+    <!-- Disclaimer link neatly aligned inside the box -->
+    <div class="disclaimer-link">
+      <a href="disclaimer.html">Privacy & Disclaimer</a>
+    </div>
   </div>
 
   <script>
